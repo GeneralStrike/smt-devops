@@ -1,0 +1,14 @@
+---
+# These need to be YAML key-value pairs.
+
+# Replace all the values of "****replace_this****" with your own values.
+
+SMT_DATABASE_NAME: "smt_db"
+SMT_DATABASE_PASSWORD: "****replace_this****"
+SMT_DATABASE_USER: "smt_db_user"
+SMT_EMAIL_PASSWORD: "****replace_this****"
+SMT_EMAIL_PORT: "587"
+SMT_ENVIRONMENT: "production"
+SMT_SECRET_KEY: "****replace_this****"
+SUPERUSER_USERNAME: "smt_superuser"
+SUPERUSER_PASSWORD: "****replace_this****"

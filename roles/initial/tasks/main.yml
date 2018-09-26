@@ -1,0 +1,48 @@
+---
+
+- name: install pip2.7
+  easy_install:
+    name: pip
+    executable: easy_install-2.7
+
+- name: install virtualenv
+  pip:
+    executable: pip3.5
+    name: virtualenv
+
+- name: create basic directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "~/etc"
+    - "~/var/logrotate"
+    - "~/venvs"
+    - "{{ media_dir }}"
+
+- name: add environment variables to .bashrc
+  lineinfile:
+    dest: ~/.bashrc
+    regexp: "^export {{ item.key }}"
+    line: "export {{ item.key }}={{ item.value }}"
+  with_items:
+    - { key: "SMT_DATABASE_NAME",
+        value: "{{ SMT_DATABASE_NAME }}" }
+    - { key: "SMT_DATABASE_PASSWORD",
+        value: "{{ SMT_DATABASE_PASSWORD }}" }
+    - { key: "SMT_DATABASE_USER",
+        value: "{{ SMT_DATABASE_USER }}" }
+    - { key: "SMT_EMAIL_PASSWORD",
+        value: "{{ SMT_EMAIL_PASSWORD }}" }
+    - { key: "SMT_EMAIL_PORT",
+        value: "{{ SMT_EMAIL_PORT }}" }
+    - { key: "SMT_ENVIRONMENT",
+        value: "{{ SMT_ENVIRONMENT }}" }
+    - { key: "SMT_SECRET_KEY",
+        value: "{{ SMT_SECRET_KEY }}" }
+
+- name: copy .pgpass file
+  template:
+    src: .pgpass
+    dest: ~/.pgpass
+    mode: 0600

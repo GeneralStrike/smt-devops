@@ -1,0 +1,19 @@
+---
+- hosts: servers
+  remote_user: shoremonitor
+  vars:
+    username: shoremonitor
+    home_directory: /home/shoremonitor
+    app_directory: "{{ home_directory }}/webapps/smt"
+    media_dir: "{{ home_directory }}/media"
+    project_directory: "{{ app_directory }}/smt"
+    virtualenv_dir: "{{ home_directory }}/venvs/smt"
+  vars_files:
+    - temp/webfaction_config.yml
+    - temp/environment_variables.yml
+  roles:
+    - initial
+    - git
+    - app
+    - supervisor
+    - cron

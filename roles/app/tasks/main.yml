@@ -1,0 +1,54 @@
+---
+- name: Check out the master branch
+  local_action: >
+    shell
+    cd ../shoreline-monitoring-toolbox &&
+    git checkout master
+
+- name: Update the deploy directory on the server with checked out files
+  synchronize:
+    src: ../shoreline-monitoring-toolbox/
+    dest: "{{ app_directory}}"
+    recursive: yes
+    delete: yes
+
+- name: create virtualenv and install requirements
+  pip:
+    requirements: "{{ app_directory }}/requirements.txt"
+    virtualenv: "{{ virtualenv_dir }}"
+    virtualenv_command: ~/bin/virtualenv
+    virtualenv_python: python3.5
+
+- name: copy gunicorn conf file
+  template:
+    src: gunicorn.conf.py
+    dest: ~/etc/gunicorn.conf.py
+
+- name: create gunicorn logs directory
+  file:
+    path: ~/logs_gunicorn
+    state: directory
+
+- name: initialise the database
+  django_manage:
+    command: migrate
+    app_path: "{{ app_directory }}"
+    virtualenv: "{{ virtualenv_dir }}"
+
+- name: create superuser
+  shell: >
+    cd {{ app_directory }} &&
+    echo "
+        from django.contrib.auth.models import User;
+        User.objects.create_superuser(
+            '{{ SUPERUSER_USERNAME }}',
+            'smt-superuser@sound-data.com',
+            '{{ SUPERUSER_PASSWORD }}'
+        )
+    " | {{ virtualenv_dir }}/bin/python manage.py shell
+
+- name: collect static
+  django_manage:
+    command: "collectstatic --noinput"
+    app_path: "{{ app_directory }}"
+    virtualenv: "{{ virtualenv_dir }}"

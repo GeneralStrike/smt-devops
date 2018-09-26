@@ -1,0 +1,33 @@
+---
+- name: install supervisor globally
+  pip:
+    name: supervisor
+    executable: ~/bin/pip2.7
+
+- name: create supervisor directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "~/supervisor"
+    - "~/logs_supervisor"
+
+- name: copy supervisord.conf to the server
+  template:
+    src: supervisord.conf
+    dest: ~/etc/supervisord.conf
+
+- name: look for supervisor's pid
+  shell: ps -A | grep -m1 supervisord | awk '{print $1}'
+  register: supervisor_pid
+
+- name: if supervisor is running, stop it and all its sub-processes
+  shell: kill -SIGTERM {{ supervisor_pid.stdout }}
+  args:
+    executable: /bin/bash
+  when: supervisor_pid.stdout
+
+- name: start supervisor
+  shell: ~/bin/supervisord
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/shoremonitor/bin"

@@ -1,0 +1,14 @@
+---
+- name: create directory for the repo
+  file:
+    path: ~/repo
+    state: directory
+
+- name: create bare repo
+  shell: git init --bare ~/repo/smt.git
+
+- name: add post-receive hook to deploy code with git pushes
+  copy:
+    src: post-receive
+    dest: ~/repo/smt.git/hooks/post-receive
+    mode: 0775

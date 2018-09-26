@@ -1,0 +1,26 @@
+---
+- name: copy supervisor monitor cron script
+  copy:
+    src: supervisor_monitor.sh
+    dest: ~/bin/supervisor_monitor.sh
+    mode: 0775
+
+- name: add cron job for supervisor
+  cron:
+    name: "restart supervisor"
+    minute: "*"
+    job: >
+      source ~/.bash_profile;
+      ~/bin/supervisor_monitor.sh
+
+- name: copy logrotate configuration file
+  copy:
+    src: logrotate.conf
+    dest: ~/etc/logrotate.conf
+
+- name: add cron job to rotate logs
+  cron:
+    name: "rotate logs"
+    hour: "3"
+    minute: "15"
+    job: /usr/sbin/logrotate -s ~/var/logrotate/status ~/etc/logrotate.conf

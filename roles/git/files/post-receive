@@ -1,0 +1,3 @@
+#!/bin/sh
+GIT_WORK_TREE=~/webapps/smt git checkout -f master
+~/bin/supervisorctl restart gunicorn
